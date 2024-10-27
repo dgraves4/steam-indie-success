@@ -15,10 +15,7 @@ This project analyzes user reviews and metadata of indie games on Steam to predi
 - [Links](#links)
 
 ## Project Structure
-├── data/ # Folder containing raw and processed data ├── notebooks/ # Jupyter notebooks for data analysis and model training ├── src/ # Python scripts for data processing, model training, and evaluation ├── models/ # Saved models and serialized files ├── README.md # Project overview and instructions └── requirements.txt # Python dependencies for the project
 
-bash
-Copy code
 
 ## Installation and Setup
 To set up this project locally, follow these steps:
