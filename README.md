@@ -30,7 +30,7 @@ To set up this project locally, follow these steps:
 
 ```bash
 py -m venv .venv
-source env/bin/activate  # On Windows, use `.venv\Scripts\activate`
+source .venv\Scripts\activate
 ```
 
 3. Install the required dependencies:
