@@ -1,7 +1,7 @@
 # Predicting Indie Game Success on Steam using Sentiment Analysis and Machine Learning
 
 ## Project Overview
-This project analyzes user reviews and metadata of indie games on Steam to predict their success. By leveraging sentiment analysis and machine learning models (such as Random Forest and Logistic Regression), this project aims to identify key factors that contribute to a game's popularity. The insights gained from this analysis could help indie developers optimize their games for better audience reception, and could also be useful to the consumer.
+This project analyzes user reviews and metadata of indie games on Steam to predict their success. By leveraging sentiment analysis and machine learning models (such as Random Forest and Logistic Regression), this project aims to identify key factors that contribute to a game's popularity. The insights gained from this analysis could help indie developers optimize their games for better audience reception and could also be useful to consumers.
 
 ## Table of Contents
 - [Project Overview](#project-overview)
@@ -15,7 +15,12 @@ This project analyzes user reviews and metadata of indie games on Steam to predi
 - [Links](#links)
 
 ## Project Structure
-
+- `data/`: Contains raw and processed datasets.
+- `notebooks/`: Jupyter notebooks used for data exploration, feature engineering, and model training.
+- `src/`: Python scripts for data collection and model training.
+- `results/`: Visualizations and results from the analysis.
+- `README.md`: Overview and documentation of the project.
+- `.env`: File to store environment variables (like Steam API keys).
 
 ## Installation and Setup
 To set up this project locally, follow these steps:
@@ -41,7 +46,7 @@ pip install -r requirements.txt
 4. Configure API access (if applicable):
 
 Obtain an API key from the Steam API.
-Store the key in an environment variable or in a configuration file as needed.
+Store the key in an environment variable or in a configuration file such as needed (ensure you include it in your .gitignore file).
 
 ## Data Collection
 
@@ -53,7 +58,7 @@ The models are trained on the processed dataset and evaluated using various metr
 - **Random Forest**
 - **Logistic Regression**
 
-Hyperparameter tuning is conducted through grid search to optimize model performance. For detailed steps in the model training process, refer to the Jupyter notebooks available in the `notebooks/` directory.
+Hyperparameter tuning is conducted through grid search to optimize model performance. 
 
 ## Results and Discussion
 
