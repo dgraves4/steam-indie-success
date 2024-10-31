@@ -52,6 +52,24 @@ Store the key in an environment variable or in a configuration file such as need
 
 Data is sourced from the [Steam API](https://developer.valvesoftware.com/wiki/Steam_Web_API), which provides access to user reviews and game metadata. This project focuses on extracting sentiment data, gameplay features, and game popularity indicators. For sample data (if available) and data processing scripts, refer to the `data/` folder and the `src/` directory.
 
+### Data Attributes
+
+| Column Name        | Description                                          | Data Type | Example Value        |
+|--------------------|------------------------------------------------------|-----------|----------------------|
+| AppID              | Unique identifier for each game                      | Integer   | 440                  |
+| Game Name          | Title of the game                                    | String    | Team Fortress 2      |
+| Release Date       | Date when the game was released                      | String    | October 10, 2007     |
+| Developer          | Developer(s) of the game                             | String    | Valve                |
+| Genres             | Genres associated with the game                      | String    | Action, Free-to-Play |
+| Price ($)          | Price of the game in USD                             | Float     | 19.99                |
+| Recommendations    | Number of recommendations received                   | Integer   | 50000                |
+
+### Additional Notes
+
+- The dataset consists of indie games from the Steam platform.
+- Each game is represented with its `AppID`, name, and other relevant metadata.
+- The dataset was collected using the Steam Web API, which allows us to gather game-specific information, including release dates, developers, genres, and community reception.
+
 ## Model Training and Evaluation
 
 The models are trained on the processed dataset and evaluated using various metrics, including accuracy, precision, recall, and F1-score. Initial models implemented include:
@@ -64,7 +82,6 @@ Hyperparameter tuning is conducted through grid search to optimize model perform
 
 This section will present the outcomes of the model evaluations and key insights gained from the analysis. Specific findings and visualizations will be provided once model training is complete, offering actionable insights for indie game developers.
 
-
 ## Limitations and Future Work
 
 Some limitations encountered in this project include:
@@ -76,12 +93,15 @@ Some limitations encountered in this project include:
 ### Future Work
 Future improvements and extensions for this project could include:
 
-- **Exploring additional platforms**: Collecting data from other gaming platforms beyond Steam to enhance the generalizability of the model.
+- **Exploring additional platforms**: Collecting data from other gaming platforms beyond Steam to enhance the generalizability of the model, such as the Epic Games Store or Microsoft Store for PC.
 - **Advanced deep learning techniques**: Implementing more sophisticated models, such as neural networks or deep learning models, to capture more nuanced sentiment and complex patterns in user behavior for improved prediction accuracy.
 
 ## References
+
 - Guzsvinecz, T., & Szűcs, J. (2022). [Length and Sentiment Analysis of Reviews about Top-Level Video Game Genres on the Steam Platform](https://www.sciencedirect.com/science/article/pii/S0747563223003060). *Computers in Human Behavior*.
 - Lounela, K. (2024). [On Identifying Relevant Features for a Successful Indie Video Game Release on Steam](https://aaltodoc.aalto.fi/items/d578980e-71fa-4618-b500-dff30bbac490). *Master’s Programme in Department of Information and Service Management*.
+- Kirasich, K., Smith, T., & Sadler, B. (2018). [Random Forest vs Logistic Regression: Binary Classification for Heterogeneous Datasets](https://scholar.smu.edu/datasciencereview/vol1/iss3/9). *SMU Data Science Review, 1*(3), Article 9. Creative Commons License.
+
 
 ## Links
 - [Overleaf Project Report](https://www.overleaf.com/read/nkwywqzxpcwr#cf3410)
