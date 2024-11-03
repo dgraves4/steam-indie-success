@@ -6,20 +6,20 @@ import csv
 import time
 import random
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 
 # Load the environment variables from .env file (API key)
 load_dotenv()
 STEAM_API_KEY = os.getenv("STEAM_API_KEY")
 
-# Check if the API key is loaded successfully
+# Check if the API key is loaded successfully and if not, print an error message and exit the script
 if not STEAM_API_KEY:
     print('API key not found. Please ensure the .env file is correctly set up.')
     exit()
 else:
     print('API key loaded successfully.')
 
-# Setting up requests session with retry logic to handle transient errors
+# Setting up requests session with retry logic to handle errors and timeouts on the server side so that the script can continue
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
 session.mount('http://', HTTPAdapter(max_retries=retries))
@@ -40,7 +40,7 @@ def get_app_list():
         print("Failed to get the app list.")
         return []
 
-# Gather detailed data for the selected list of games
+# Gather detailed data for the selected list of games and add a rate limit to avoid locking out the API
 def get_detailed_data(app_ids, rate_limit=10):
     """
     Gathers detailed information for each app ID provided.
@@ -85,7 +85,7 @@ def get_detailed_data(app_ids, rate_limit=10):
             except json.JSONDecodeError:
                 print(f"Error parsing JSON for app_id {app_id}")
 
-        # Rate limit: wait to avoid overwhelming the server
+        # Rate limit: create a wait to avoid overwhelming the server
         if count % rate_limit == 0:
             time.sleep(60)
 
