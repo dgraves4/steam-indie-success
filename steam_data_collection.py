@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import time
 from dotenv import load_dotenv
 import csv
 
@@ -42,7 +43,7 @@ def get_detailed_data(app_ids):
     """
     data = []  # To store the collected data
     count = 0  # Counter to keep track of the number of games processed
-    
+
     for app_id in app_ids:
         # Limit to 300 games for size considerations
         if count >= 300:
@@ -50,17 +51,17 @@ def get_detailed_data(app_ids):
 
         # Construct the API URL for getting the details of each app by app with f-string
         url = f"http://store.steampowered.com/api/appdetails?appids={app_id}&key={STEAM_API_KEY}"
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)  # Add a timeout to prevent hanging
 
         # If the response from the API was successful, parse the data
         if response.status_code == 200:
             try:
                 app_data = response.json()
-                
+
                 # Verify if the app data is available and the request was successful
                 if str(app_id) in app_data and app_data[str(app_id)]['success']:
                     details = app_data[str(app_id)]['data']
-                    
+
                     # Extract genres and check if the game is labeled as "Indie"
                     genres = [genre['description'] for genre in details.get('genres', [])]
                     if 'Indie' in genres:
@@ -83,9 +84,15 @@ def get_detailed_data(app_ids):
                             'Recommendations': recommendations
                         })
                         count += 1
+
+                        # Print progress to monitor which game is being processed
+                        print(f"Collected data for AppID: {app_id} ({game_name})")
             except json.JSONDecodeError:
                 # Handle any errors that occur when trying to parse the JSON response
                 print(f"Error parsing JSON for app_id {app_id}")
+
+        # Add a delay to avoid overwhelming the API server
+        time.sleep(1)
 
     # Save the collected data into a CSV file named 'steam_indie_games.csv'
     with open('steam_indie_games.csv', mode='w', newline='') as file:
@@ -98,10 +105,7 @@ def get_detailed_data(app_ids):
 # Collect data for selected list of games (app IDs)
 # Get the list of all games using the Steam API
 all_games = get_app_list()
-# Extract all app IDs from the list
-selected_app_ids = [game['appid'] for game in all_games]
+# Extract all app IDs from the list and limit to 1000 for testing purposes
+selected_app_ids = [game['appid'] for game in all_games][:1000]  # Limit the number of games for initial testing
 # Fetch the detailed data for each selected game
 get_detailed_data(selected_app_ids)
-
-
-
