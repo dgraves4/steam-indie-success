@@ -15,12 +15,13 @@ This project analyzes user reviews and metadata of indie games on Steam to predi
 - [Links](#links)
 
 ## Project Structure
-- `data/`: Contains raw and processed datasets.
+- `data/`: Contains raw and processed datasets (`steam_indie_games_all.csv` and `steam_indie_games_balanced.csv`).
 - `notebooks/`: Jupyter notebooks used for data exploration, feature engineering, and model training.
-- `src/`: Python scripts for data collection and model training.
+- `src/`: Python scripts for data collection (`steam_data_collection.py`) and model training.
 - `results/`: Visualizations and results from the analysis.
 - `README.md`: Overview and documentation of the project.
 - `.env`: File to store environment variables (like Steam API keys).
+- `.gitignore`: Specifies which files and directories should be ignored by Git.
 
 ## Installation and Setup
 To set up this project locally, follow these steps:
@@ -43,6 +44,7 @@ source .venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+
 4. Configure API access (if applicable):
 
 Obtain an API key from the Steam API.
@@ -50,7 +52,7 @@ Store the key in an environment variable or in a configuration file such as need
 
 ## Data Collection
 
-Data is sourced from the [Steam API](https://developer.valvesoftware.com/wiki/Steam_Web_API), which provides access to user reviews and game metadata. This project focuses on extracting sentiment data, gameplay features, and game popularity indicators. For sample data (if available) and data processing scripts, refer to the `data/` folder and the `src/` directory.
+Data is sourced from the [Steam API](https://developer.valvesoftware.com/wiki/Steam_Web_API), which provides access to game metadata and user reviews. This project focuses on extracting game details, gameplay features, community engagement, and sentiment data. For sample data and data processing scripts, refer to the `data/` folder and the `src/` directory.
 
 ### Data Attributes
 
@@ -63,12 +65,14 @@ Data is sourced from the [Steam API](https://developer.valvesoftware.com/wiki/St
 | Genres             | Genres associated with the game                      | String    | Action, Free-to-Play |
 | Price ($)          | Price of the game in USD                             | Float     | 19.99                |
 | Recommendations    | Number of recommendations received                   | Integer   | 50000                |
+| Metacritic Score   | Metacritic score of the game                         | String    | 85                   |
 
 ### Additional Notes
 
 - The dataset consists of indie games from the Steam platform.
 - Each game is represented with its `AppID`, name, and other relevant metadata.
 - The dataset was collected using the Steam Web API, which allows us to gather game-specific information, including release dates, developers, genres, and community reception.
+- Data was saved in two formats: `steam_indie_games_all.csv` (full dataset) and `steam_indie_games_balanced.csv` (balanced dataset for machine learning models).
 
 ## Model Training and Evaluation
 
@@ -98,10 +102,9 @@ Future improvements and extensions for this project could include:
 
 ## References
 
-- Guzsvinecz, T., & Szűcs, J. (2022). [Length and Sentiment Analysis of Reviews about Top-Level Video Game Genres on the Steam Platform](https://www.sciencedirect.com/science/article/pii/S0747563223003060). *Computers in Human Behavior*.
-- Lounela, K. (2024). [On Identifying Relevant Features for a Successful Indie Video Game Release on Steam](https://aaltodoc.aalto.fi/items/d578980e-71fa-4618-b500-dff30bbac490). *Master’s Programme in Department of Information and Service Management*.
+- Bellavista, P., Corradi, A., & Stefanelli, C. (2001). [Mobile agent middleware for mobile computing](https://doi.org/10.1109/2.910896). *Computer, 34*(3), 73-81.
 - Kirasich, K., Smith, T., & Sadler, B. (2018). [Random Forest vs Logistic Regression: Binary Classification for Heterogeneous Datasets](https://scholar.smu.edu/datasciencereview/vol1/iss3/9). *SMU Data Science Review, 1*(3), Article 9. Creative Commons License.
-
+- Lounela, K. (2024). [On Identifying Relevant Features for a Successful Indie Video Game Release on Steam](https://aaltodoc.aalto.fi/items/d578980e-71fa-4618-b500-dff30bbac490). *Master’s Programme in Department of Information and Service Management*.
 
 ## Links
 - [Overleaf Project Report](https://www.overleaf.com/read/nkwywqzxpcwr#cf3410)
