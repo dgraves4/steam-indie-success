@@ -19,7 +19,7 @@ if not STEAM_API_KEY:
 else:
     print('API key loaded successfully.')
 
-# Setting up a requests session with retry logic to any HTTP errors (500, 502, 503, 504) to avoid data loss.
+# Setting up a requests session with retry logic to handle any HTTP errors (500, 502, 503, 504) to avoid data loss.
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
 session.mount('https://', HTTPAdapter(max_retries=retries))  # Using HTTPS for secure communication
@@ -57,9 +57,9 @@ def get_detailed_data(app_ids, rate_limit=20, min_games=300):
     sleep_duration = 10  # Initial sleep duration for rate limiting (in seconds)
 
     # Continue collecting data until the minimum number of games is gathered.
-    while len(data) < min_games:
+    while len(data) < min_games * 4:  # Collect four times the required amount to allow for balancing
         for app_id in app_ids:
-            if len(data) >= min_games:
+            if len(data) >= min_games * 4:
                 break
 
             url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
@@ -132,9 +132,9 @@ def get_detailed_data(app_ids, rate_limit=20, min_games=300):
                 time.sleep(sleep_duration)
 
         # If insufficient data has been collected, resample the app IDs to continue collecting data.
-        if len(data) < min_games:
-            print(f"Insufficient data collected ({len(data)}/{min_games}). Resampling app IDs...")
-            app_ids = random.sample([game['appid'] for game in all_games], min(5000, len(all_games)))
+        if len(data) < min_games * 4:
+            print(f"Insufficient data collected ({len(data)}/{min_games * 4}). Resampling app IDs...")
+            app_ids = random.sample([game['appid'] for game in all_games], min(10000, len(all_games)))
 
     # Filter the collected data to include only games with at least a minimum number of 5 recommendations.
     MIN_RECOMMENDATIONS = 5
@@ -146,11 +146,16 @@ def get_detailed_data(app_ids, rate_limit=20, min_games=300):
     high_recommendation_games = [game for game in filtered_data if game['Recommendations'] > 500]
 
     # Ensure that the sample size does not exceed the available population in each category.
+    while len(low_recommendation_games) < 100 or len(moderate_recommendation_games) < 100 or len(high_recommendation_games) < 100:
+        print("Not enough data in one or more categories. Continuing data collection...")
+        get_detailed_data(random.sample([game['appid'] for game in all_games], min(10000, len(all_games))), rate_limit, min_games)
+        return
+
     low_recommendation_games = random.sample(low_recommendation_games, min(100, len(low_recommendation_games)))
     moderate_recommendation_games = random.sample(moderate_recommendation_games, min(100, len(moderate_recommendation_games)))
     high_recommendation_games = random.sample(high_recommendation_games, min(100, len(high_recommendation_games)))
 
-    # Combine all categories to create a balanced dataset.
+    # Combine all categories to create a balanced dataset of exactly 300 games.
     balanced_data = low_recommendation_games + moderate_recommendation_games + high_recommendation_games
 
     # Save the balanced dataset to a CSV file.
@@ -170,11 +175,16 @@ def get_detailed_data(app_ids, rate_limit=20, min_games=300):
 # Collect the complete list of games from Steam.
 all_games = get_app_list()
 
-# Sample a subset of game IDs (5000) to increase the chances of collecting enough valid data for analysis.
-selected_app_ids = random.sample([game['appid'] for game in all_games], min(5000, len(all_games)))
+# Sample a subset of game IDs (10000) to increase the chances of collecting enough valid data for analysis.
+selected_app_ids = random.sample([game['appid'] for game in all_games], min(10000, len(all_games)))
 
 # Fetch detailed data for each selected game, aiming to collect data for at least 300 games.
 get_detailed_data(selected_app_ids, min_games=300)
+
+
+
+
+
 
 
 
