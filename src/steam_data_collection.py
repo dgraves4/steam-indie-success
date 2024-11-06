@@ -7,6 +7,7 @@ import time
 import random
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Load the environment variables from the .env file, specifically the API key needed for accessing the Steam API.
 load_dotenv()
@@ -21,7 +22,7 @@ else:
 
 # Setting up a requests session with retry logic to handle any HTTP errors (500, 502, 503, 504) to avoid data loss.
 session = requests.Session()
-retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504, 429])
 session.mount('https://', HTTPAdapter(max_retries=retries))  # Using HTTPS for secure communication
 
 # Function to retrieve a list of all game IDs available on Steam.
@@ -31,7 +32,7 @@ def get_app_list():
     """
     url = "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
     try:
-        response = session.get(url)
+        response = session.get(url, timeout=10)
 
         # If the request is successful, extract and return the list of game apps.
         if response.status_code == 200:
@@ -46,117 +47,87 @@ def get_app_list():
         return []
 
 # Function to gather detailed information for a selected list of games.
-# Rate limiting is implemented to avoid being blocked by the API for making too many requests.
-def get_detailed_data(app_ids, rate_limit=20, min_games=300):
+def get_detailed_data(app_ids, min_games=300):
     """
     Gathers detailed information for each app ID provided.
-    Saves the collected data in CSV files.
+    Saves the collected data in a CSV file.
     """
     data = []  # List to store detailed information of games
-    count = 0  # Counter to keep track of the number of processed games
-    sleep_duration = 10  # Initial sleep duration for rate limiting (in seconds)
 
-    # Continue collecting data until the minimum number of games is gathered.
-    while len(data) < min_games * 4:  # Collect four times the required amount to allow for balancing
-        for app_id in app_ids:
-            if len(data) >= min_games * 4:
-                break
-
-            url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
+    def fetch_app_details(app_id):
+        url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
+        retries = 3  # Number of retries for each request
+        for attempt in range(retries):
             try:
-                response = session.get(url)
-
-                # If the request is successful, process the game details.
+                response = session.get(url, timeout=10)
                 if response.status_code == 200:
-                    try:
-                        app_data = response.json()
+                    app_data = response.json()
+                    if str(app_id) in app_data and app_data[str(app_id)]['success']:
+                        details = app_data[str(app_id)]['data']
+                        genres = [genre['description'] for genre in details.get('genres', [])]
+                        if 'Indie' in genres and details.get('type', '').lower() not in ['dlc', 'demo']:
+                            game_name = details.get('name', 'N/A')
+                            release_date = details.get('release_date', {}).get('date', 'N/A')
+                            developer = ", ".join(details.get('developers', [])) if 'developers' in details else 'N/A'
+                            genres_str = ", ".join(genres)
+                            price = details.get('price_overview', {}).get('final', 0) / 100 if 'price_overview' in details else 'Free'
+                            recommendations = details.get('recommendations', {}).get('total', 0)
+                            metacritic_score = details.get('metacritic', {}).get('score', 'N/A')
 
-                        # Ensure the response contains valid data for the requested app ID before processing.
-                        if str(app_id) in app_data and app_data[str(app_id)]['success']:
-                            details = app_data[str(app_id)]['data']
-
-                            # Extract genres and filter out games based on certain criteria (e.g., genre, type, etc.).
-                            genres = [genre['description'] for genre in details.get('genres', [])]
-                            if 'Indie' in genres and 'Adult' not in genres and not details.get('type', '').lower() == 'dlc' and not details.get('type', '').lower() == 'demo':
-                                game_name = details.get('name', 'N/A')
-                                release_date = details.get('release_date', {}).get('date', 'N/A')
-                                developer = ", ".join(details.get('developers', [])) if 'developers' in details else 'N/A'
-                                genres_str = ", ".join(genres)
-                                price = details.get('price_overview', {}).get('final', 0) / 100 if 'price_overview' in details else 'Free'
-                                recommendations = details.get('recommendations', {}).get('total', 0)
-                                metacritic_score = details.get('metacritic', {}).get('score', 'N/A')
-
-                                # Skip games that are still in development or early access.
-                                if 'Coming soon' in release_date or 'Early Access' in genres_str:
-                                    continue
-
-                                # Add the game details to the data list.
-                                data.append({
-                                    'AppID': app_id,
-                                    'Game Name': game_name,
-                                    'Release Date': release_date,
-                                    'Developer': developer,
-                                    'Genres': genres_str,
-                                    'Price ($)': price,
-                                    'Recommendations': recommendations,
-                                    'Metacritic Score': metacritic_score
-                                })
-
-                                count += 1
-                                print(f"Collected data for AppID: {app_id} ({game_name})")
-
-                    except json.JSONDecodeError:
-                        print(f"Error parsing JSON for app_id {app_id}")
-
-                # Handle rate limit errors by backing off and retrying after a delay if the rate limit is hit.
+                            return {
+                                'AppID': app_id,
+                                'Game Name': game_name,
+                                'Release Date': release_date,
+                                'Developer': developer,
+                                'Genres': genres_str,
+                                'Price ($)': price,
+                                'Recommendations': recommendations,
+                                'Metacritic Score': metacritic_score
+                            }
                 elif response.status_code == 429:
-                    print(f"Rate limit hit for AppID {app_id}. Status code: 429. Sleeping for {sleep_duration} seconds.")
-                    time.sleep(sleep_duration)
-                    sleep_duration = min(sleep_duration * 2, 120)  # Exponential backoff to manage rate limits
-                    continue
-
-                # Handle forbidden access to certain app IDs that are not publicly available.
-                elif response.status_code == 403:
-                    print(f"Access forbidden for AppID {app_id}. Status code: 403. Skipping.")
-
-                # Handle other potential errors.
+                    # Handle rate limiting with exponential backoff
+                    sleep_time = 2 ** (attempt + 1)
+                    print(f"Rate limit hit for AppID {app_id}. Sleeping for {sleep_time} seconds.")
+                    time.sleep(sleep_time)
                 else:
-                    print(f"Failed to get details for AppID {app_id}. Status code: {response.status_code}")
-
+                    print(f"Attempt {attempt + 1} failed for AppID {app_id}. Status code: {response.status_code}")
             except requests.exceptions.RequestException as e:
-                print(f"Error occurred while fetching app details for AppID {app_id}: {e}")
+                print(f"Attempt {attempt + 1} error for AppID {app_id}: {e}")
+            time.sleep(5)  # Wait before retrying
+        return None
 
-            # Rate limiting: Pause the requests after processing a certain number of games to avoid hitting the rate limit.
-            if count % rate_limit == 0 and count > 0:
-                print(f"Rate limiting: Sleeping for {sleep_duration} seconds...")
-                time.sleep(sleep_duration)
+    # Use ThreadPoolExecutor to speed up the data collection process.
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_app_id = {executor.submit(fetch_app_details, app_id): app_id for app_id in app_ids}
+        for future in as_completed(future_to_app_id):
+            app_id = future_to_app_id[future]
+            try:
+                result = future.result()
+                if result:
+                    data.append(result)
+                    print(f"Collected data for AppID: {app_id} ({result['Game Name']})")
+            except Exception as e:
+                print(f"Error fetching details for AppID {app_id}: {e}")
 
-        # If insufficient data has been collected, resample the app IDs to continue collecting data.
-        if len(data) < min_games * 4:
-            print(f"Insufficient data collected ({len(data)}/{min_games * 4}). Resampling app IDs...")
-            app_ids = random.sample([game['appid'] for game in all_games], min(10000, len(all_games)))
-
-    # Filter the collected data to include only games with at least a minimum number of 5 recommendations.
-    MIN_RECOMMENDATIONS = 5
+    # Filter the collected data to include only games with at least a minimum number of 1 recommendation.
+    MIN_RECOMMENDATIONS = 1
     filtered_data = [game for game in data if game['Recommendations'] >= MIN_RECOMMENDATIONS]
 
-    # Balance the dataset by selecting a proportional number of games from different recommendation categories.
+    # Balance the dataset by selecting as many games as possible from different recommendation categories.
     low_recommendation_games = [game for game in filtered_data if game['Recommendations'] <= 50]
     moderate_recommendation_games = [game for game in filtered_data if 50 < game['Recommendations'] <= 500]
     high_recommendation_games = [game for game in filtered_data if game['Recommendations'] > 500]
 
-    # Ensure that the sample size does not exceed the available population in each category.
-    while len(low_recommendation_games) < 100 or len(moderate_recommendation_games) < 100 or len(high_recommendation_games) < 100:
-        print("Not enough data in one or more categories. Continuing data collection...")
-        get_detailed_data(random.sample([game['appid'] for game in all_games], min(10000, len(all_games))), rate_limit, min_games)
-        return
+    # Collect games from each category, allowing for unbalanced totals if necessary.
+    balanced_data = (
+        random.sample(low_recommendation_games, min(100, len(low_recommendation_games))) +
+        random.sample(moderate_recommendation_games, min(100, len(moderate_recommendation_games))) +
+        random.sample(high_recommendation_games, min(100, len(high_recommendation_games)))
+    )
 
-    low_recommendation_games = random.sample(low_recommendation_games, min(100, len(low_recommendation_games)))
-    moderate_recommendation_games = random.sample(moderate_recommendation_games, min(100, len(moderate_recommendation_games)))
-    high_recommendation_games = random.sample(high_recommendation_games, min(100, len(high_recommendation_games)))
-
-    # Combine all categories to create a balanced dataset of exactly 300 games.
-    balanced_data = low_recommendation_games + moderate_recommendation_games + high_recommendation_games
+    # If we still don't have enough data, use all that is available.
+    if len(balanced_data) < min_games:
+        balanced_data = filtered_data[:min_games]
 
     # Save the balanced dataset to a CSV file.
     with open('steam_indie_games_balanced.csv', mode='w', newline='') as file:
@@ -164,13 +135,7 @@ def get_detailed_data(app_ids, rate_limit=20, min_games=300):
         writer.writeheader()
         writer.writerows(balanced_data)
 
-    # Save all the collected data before balancing to a separate CSV file.
-    with open('steam_indie_games_all.csv', mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=['AppID', 'Game Name', 'Release Date', 'Developer', 'Genres', 'Price ($)', 'Recommendations', 'Metacritic Score'])
-        writer.writeheader()
-        writer.writerows(data)
-
-    print('Data successfully saved to steam_indie_games_balanced.csv and steam_indie_games_all.csv')
+    print(f'Data successfully saved to steam_indie_games_balanced.csv with {len(balanced_data)} records.')
 
 # Collect the complete list of games from Steam.
 all_games = get_app_list()
@@ -180,6 +145,10 @@ selected_app_ids = random.sample([game['appid'] for game in all_games], min(1000
 
 # Fetch detailed data for each selected game, aiming to collect data for at least 300 games.
 get_detailed_data(selected_app_ids, min_games=300)
+
+
+
+
 
 
 
