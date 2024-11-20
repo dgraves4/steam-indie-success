@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>data_cleaning</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>data_cleaning_EDA</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7475,7 +7475,56 @@ a.anchor-link {
 </style>
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
-<main><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<main>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h1 id="Data-Cleaning-and-Exploratory-Data-Analysis-(EDA)-for-Steam-Indie-Games-Dataset">Data Cleaning and Exploratory Data Analysis (EDA) for Steam Indie Games Dataset<a class="anchor-link" href="#Data-Cleaning-and-Exploratory-Data-Analysis-(EDA)-for-Steam-Indie-Games-Dataset">¶</a></h1><h2 id="1.-Introduction"><strong>1. Introduction</strong><a class="anchor-link" href="#1.-Introduction">¶</a></h2><p>The objective of this notebook is to clean, preprocess, and perform an exploratory data analysis (EDA) on the dataset of indie games from the Steam platform. This dataset, collected through the Steam Web API, contains comprehensive metadata about various games, including features like price, genre, developer information, release date, and user engagement metrics.</p>
+<p>By utilizing effective data cleaning and EDA techniques, we aim to understand the key characteristics of the dataset, detect patterns and correlations, and prepare a high-quality dataset for the predictive analysis phase of this project. The insights gained in this phase will help determine which features are most relevant for predicting game success and guide us in the development of machine learning models.</p>
+<h2 id="2.-Objectives-of-the-Notebook"><strong>2. Objectives of the Notebook</strong><a class="anchor-link" href="#2.-Objectives-of-the-Notebook">¶</a></h2><ol>
+<li><p><strong>Data Cleaning</strong>:</p>
+<ul>
+<li>Handle missing values and correct inconsistencies in the dataset.</li>
+<li>Engineer relevant features to provide additional context and improve the predictive capabilities of the dataset.</li>
+<li>Normalize features to ensure that the dataset is prepared for advanced analysis and machine learning.</li>
+</ul>
+</li>
+<li><p><strong>Exploratory Data Analysis (EDA)</strong>:</p>
+<ul>
+<li>Visualize the distribution of key numerical features to understand underlying patterns.</li>
+<li>Identify relationships between features, such as price, user recommendations, and genre.</li>
+<li>Use visual tools such as distribution plots, correlation heatmaps, and boxplots to explore the data and inform feature selection.</li>
+</ul>
+</li>
+</ol>
+<h2 id="3.-Data-Cleaning-Overview"><strong>3. Data Cleaning Overview</strong><a class="anchor-link" href="#3.-Data-Cleaning-Overview">¶</a></h2><p>The cleaning process involves addressing missing values, engineering new features, and scaling numerical variables. Key transformations include:</p>
+<ul>
+<li><strong>Handling Missing Values</strong>: Imputing missing numerical values and removing records that lack critical information.</li>
+<li><strong>Feature Engineering</strong>: Adding new attributes, such as "Years Since Release," to provide additional temporal context.</li>
+<li><strong>Normalization</strong>: Scaling key numerical features using Min-Max normalization to maintain consistency and aid in predictive modeling.</li>
+</ul>
+<p>This section is critical in ensuring that the data is complete, accurate, and prepared for the next phase of analysis.</p>
+<h2 id="4.-Exploratory-Data-Analysis-Overview"><strong>4. Exploratory Data Analysis Overview</strong><a class="anchor-link" href="#4.-Exploratory-Data-Analysis-Overview">¶</a></h2><p>In this section, we focus on exploring the dataset to gain deeper insights and identify potential relationships among features:</p>
+<ul>
+<li>We employ <strong>distribution plots</strong> to visualize pricing trends, <strong>heatmaps</strong> to understand correlations among features, and <strong>boxplots</strong> to explore the variations in price across different genres.</li>
+<li>These visualizations allow us to formulate hypotheses about what might influence game popularity and success, which will be valuable for model building in subsequent stages.</li>
+</ul>
+<h2 id="5.-Notebook-Structure"><strong>5. Notebook Structure</strong><a class="anchor-link" href="#5.-Notebook-Structure">¶</a></h2><ol>
+<li><strong>Data Loading</strong>: Load the dataset and perform initial checks to understand its structure.</li>
+<li><strong>Data Cleaning</strong>: Process the raw data to handle missing values, engineer features, and prepare it for modeling.</li>
+<li><strong>Exploratory Data Analysis (EDA)</strong>: Use various visualizations to analyze the features of the dataset, identify trends, and explore relationships.</li>
+<li><strong>Conclusion</strong>: Summarize findings from the EDA and discuss their implications for the predictive analysis phase.</li>
+</ol>
+<h2 id="6.-Next-Steps"><strong>6. Next Steps</strong><a class="anchor-link" href="#6.-Next-Steps">¶</a></h2><p>The insights gained from this notebook will serve as the foundation for the next stage of the project: <strong>Predictive Analysis</strong>. Using the cleaned and preprocessed dataset, we will develop machine learning models to predict the commercial success of indie games on Steam. The features identified in the EDA phase will play a key role in building effective models.</p>
+<hr/>
+<p>By the end of this notebook, we aim to have a clean, well-understood dataset that is ready for machine learning modeling, and a solid grasp of the data's underlying patterns and relationships.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
