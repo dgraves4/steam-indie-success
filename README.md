@@ -99,10 +99,15 @@ The data collection process involved:
 For sample data and data processing scripts, refer to the `data/` folder and the `src/` directory.
 
 ## Data Cleaning and Feature Engineering
+
 The dataset underwent cleaning and preprocessing to ensure data quality:
 - Handled missing values and dropped unreliable columns (e.g., Metacritic Score).
 - Engineered features like "Years Since Release" to provide temporal context.
 - Log-transformed recommendations to reduce skewness.
+
+![Correlation Heatmap](images/FeatureCorrelationHeatmap.png)
+
+*Figure: Correlation heatmap of key features after data cleaning.*
 
 ## Exploratory Data Analysis (EDA)
 Key visualizations include:
@@ -137,18 +142,47 @@ EDA revealed insights such as the importance of affordable pricing and the impac
   - `steam_indie_games_balanced.csv` (initial, uncleaned, balanced dataset for machine learning models)
 - **Balanced Dataset**: The balanced dataset aimed to include a mix of both highly popular and lesser-known games to ensure a more representative analysis for machine learning models.
 
-## Model Training and Evaluation
+### Model Training and Evaluation
 
-The models were trained on the processed dataset and evaluated using various metrics, including accuracy, precision, recall, and F1-score. The process involved an 80/20 stratified train-test split in an attempt to ensure class balance was maintained across both training and testing sets.
+Models were trained and evaluated using various metrics like accuracy, precision, recall, and F1-score. Below are visualizations highlighting model performance and key metrics:
 
-### Models Implemented
-- **Logistic Regression**: Chosen as the baseline model for its simplicity and interpretability, allowing us to understand basic relationships between features and game success.
-- **Random Forest**: Selected to capture more complex, non-linear relationships between features, given the mix of numerical and categorical data.
-- **Support Vector Machine (SVM)**: Added to explore more complex decision boundaries, focusing on maximizing the margin between classes.
+#### Target Variable Distribution
+![Target Variable Distribution](images/target_variable_dist.png)
 
-### Model Training Approach
-- **Feature Engineering**: Initial training was conducted with basic features like "Recommendations." Additional features like "Price," "Years Since Release," and "Genres" were gradually added to enhance model accuracy.
-- **Hyperparameter Tuning**: Hyperparameter tuning was conducted through `GridSearchCV` to optimize model performance for Random Forest and SVM, experimenting with different parameter combinations to improve accuracy and generalizability.
+*Figure: Distribution of the target variable (game success).*
+
+#### Logistic Regression
+- Combined Features:
+![Logistic Regression Confusion Matrix - Combined Features](images/logreg_combined_confusion_matrix.png)
+
+*Figure: Confusion matrix for Logistic Regression (combined features).*
+
+- Years Since Release:
+![Logistic Regression Confusion Matrix - Years Since Release](images/logreg_years_confusion_matrix.png)
+
+*Figure: Confusion matrix for Logistic Regression (Years Since Release feature).*
+
+#### Random Forest
+- Feature Importance:
+![Random Forest Feature Importance](images/RF_feature_importance.png)
+
+*Figure: Feature importance scores from the Random Forest model.*
+
+- Combined Features (Tuned):
+![Random Forest Tuned Confusion Matrix - Combined Features](images/rf_combined_tuned_confusion_matrix.png)
+
+*Figure: Confusion matrix for Random Forest (tuned, combined features).*
+
+- Combined Features (Untuned):
+![Random Forest Untuned Confusion Matrix - Combined Features](images/rf_combined_untuned_confusion_matrix.png)
+
+*Figure: Confusion matrix for Random Forest (untuned, combined features).*
+
+#### Support Vector Machine (SVM)
+- Combined Features (Tuned):
+![SVM Tuned Confusion Matrix - Combined Features](images/svm_combined_tuned_confusion_matrix.png)
+
+*Figure: Confusion matrix for SVM (tuned, combined features).*
 
 ### Evaluation Metrics
 Models were evaluated using:
@@ -179,6 +213,10 @@ Currently, the Random Forest model with tuned hyperparameters provided the best 
 - **Random Forest** performed the best after tuning, achieving an accuracy of **65.52%**.
 - **SVM** struggled with accuracy, even after hyperparameter tuning, indicating it may not be the best model for this dataset.
 - **Logistic Regression** also showed moderate performance but was outperformed by Random Forest.
+
+![Feature Importance - Random Forest](images/RF_feature_importance.png)
+
+![Price Boxplot by Years Since Release](images/years_since_release_price_boxplot.png)
 
 ## Limitations and Future Work
 
