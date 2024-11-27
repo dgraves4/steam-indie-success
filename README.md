@@ -1,14 +1,35 @@
 # Predicting Indie Game Success on Steam using Machine Learning
 
+## Abstract
+This project investigates the factors contributing to the success of indie games on Steam by leveraging game metadata, player engagement metrics, and machine learning techniques. Through detailed data collection, preprocessing, and exploratory data analysis, we developed predictive models to identify key determinants of game success. A tuned Random Forest model achieved the best accuracy (66%), emphasizing the importance of factors like price and release longevity. This project provides actionable insights for indie developers to optimize their games and strategies for greater market success.
+
+[**Click here to access the full Overleaf Report**](https://www.overleaf.com/read/nkwywqzxpcwr#cf3410)
+
 ## Project Overview
-This project aims to predict the success of indie games on Steam by analyzing game metadata, gameplay features, and community engagement data. By leveraging machine learning models such as Logistic Regression, Random Forest, and Support Vector Machine (SVM), we aim to identify key factors that contribute to a game's success. The project involves data collection via the Steam API, feature engineering, and extensive exploratory data analysis (EDA) to build predictive models. The insights gained can help indie developers optimize their games for better audience reception and provide consumers with more information about game quality.
+Indie games dominate the Steam platform, with thousands released annually. However, developers often face challenges understanding what factors drive success. This capstone project aims to:
+- Predict game success based on metadata using machine learning models.
+- Provide actionable insights to indie developers.
+- Offer players insights into discovering quality titles.
+
+Key deliverables include:
+- A professional Overleaf report documenting the project in detail.
+- A comprehensive GitHub repository containing datasets, scripts, notebooks, and visualizations.
+
+The pipeline used for this project is illustrated below:
+
+![Pipeline Overview](images/PipelineOverview.png)
+
+This diagram provides an overview of the data flow, from collection to model evaluation.
 
 ## Table of Contents
+- [Abstract](#abstract)
 - [Project Overview](#project-overview)
+- [Table of Contents](#table-of-contents)
 - [Project Structure](#project-structure)
 - [Installation and Setup](#installation-and-setup)
 - [Data Collection](#data-collection)
 - [Data Cleaning and Feature Engineering](#data-cleaning-and-feature-engineering)
+- [Exploratory Data Analysis (EDA)](#exploratory-data-analysis-eda)
 - [Model Training and Evaluation](#model-training-and-evaluation)
 - [Results and Discussion](#results-and-discussion)
 - [Limitations and Future Work](#limitations-and-future-work)
@@ -16,18 +37,21 @@ This project aims to predict the success of indie games on Steam by analyzing ga
 - [Links](#links)
 
 ## Project Structure
-- `data/`: Contains raw and processed datasets (`steam_indie_games_all.csv`, `steam_indie_games_cleaned.csv`, `steam_indie_games_balanced.csv`).
-- `notebooks/`: Jupyter notebooks used for data cleaning, exploration, feature engineering, model training, and evaluation. Notebooks include:
-  - **Data Cleaning and EDA**: Cleaning the raw data, handling missing values, and initial exploration.
-  - **Model Training and Evaluation**: Training models (Logistic Regression, Random Forest, SVM), hyperparameter tuning, and evaluating results.
-- `src/`: Python scripts for:
-  - **Data Collection** (`steam_data_collection.py`): Script used for initial data extraction from the Steam API, including handling rate limits.
-- `results/`: Visualizations and performance metrics from the analysis, including correlation heatmaps, distribution plots, and model evaluation charts.
-- `images/`: Contains diagrams and screenshots used in reporting (e.g., pipeline diagrams, flowcharts, code snippets, visuals).
-- `README.md`: Overview and documentation of the project.
-- `.env`: File to store environment variables (like Steam API keys).
-- `.gitignore`: Specifies which files and directories should be ignored by Git (e.g., `.env`, virtual environment files, etc.).
-
+The repository is structured to reflect a professional and modular workflow:
+- **`data/`**: Contains raw and processed datasets:
+  - `steam_indie_games_all.csv`
+  - `steam_indie_games_cleaned.csv`
+  - `steam_indie_games_balanced.csv`
+- **`notebooks/`**:
+  - **Data Cleaning and EDA Notebook**: Prepares data for modeling and explores feature relationships.
+  - **Predictive Analysis Notebook**: Includes training and evaluation for Logistic Regression, Random Forest, and SVM models.
+- **`src/`**: Python scripts for API data collection:
+  - `steam_data_collection.py`: Implements API rate-handling logic and balancing strategies.
+- **`results/`**: Contains output files such as evaluation metrics and visualizations.
+- **`images/`**: Contains all figures and screenshots used in the report.
+- **README.md**: This documentation file, linking to the report and providing an overview.
+- **requirements.txt**: Lists Python dependencies for reproducibility.
+- **.gitignore**: Prevents sensitive or unnecessary files from being included in the repository.
 
 ## Installation and Setup
 To set up this project locally, follow these steps:
@@ -74,6 +98,19 @@ The data collection process involved:
 
 For sample data and data processing scripts, refer to the `data/` folder and the `src/` directory.
 
+## Data Cleaning and Feature Engineering
+The dataset underwent cleaning and preprocessing to ensure data quality:
+- Handled missing values and dropped unreliable columns (e.g., Metacritic Score).
+- Engineered features like "Years Since Release" to provide temporal context.
+- Log-transformed recommendations to reduce skewness.
+
+## Exploratory Data Analysis (EDA)
+Key visualizations include:
+- **Price Distribution**: Shows the prevalence of games priced below $20.
+- **Correlation Heatmap**: Reveals relationships between features.
+- **Genre Heatmap**: Highlights the dominance of action and adventure games.
+
+EDA revealed insights such as the importance of affordable pricing and the impact of release longevity on success. Visualizations are available in the `images/` folder and the [report](https://www.overleaf.com/read/nkwywqzxpcwr#cf3410).
 
 ### Data Attributes
 
@@ -96,7 +133,7 @@ For sample data and data processing scripts, refer to the `data/` folder and the
   - The "Recommendations" feature underwent a logarithmic transformation to address skewness and reduce the influence of outliers.
   - A new feature, "Years Since Release," was engineered to provide temporal context, aiding in the analysis of how game release longevity impacts success.
 - **Data Formats**: The data was saved in two formats:
-  - `steam_indie_games_all.csv` (full dataset with multiple cleaning versions)
+  - `steam_indie_games_all.csv` (full dataset with multiple cleaning versions,V1, V2, and V3)
   - `steam_indie_games_balanced.csv` (initial, uncleaned, balanced dataset for machine learning models)
 - **Balanced Dataset**: The balanced dataset aimed to include a mix of both highly popular and lesser-known games to ensure a more representative analysis for machine learning models.
 
@@ -127,22 +164,21 @@ Currently, the Random Forest model with tuned hyperparameters provided the best 
 
 ### Model Performance Summary
 
-The following table presents the evaluation metrics for the different machine learning models trained on the dataset. The metrics include Accuracy, Precision, and Recall for both classes (Class 0: Not Successful, Class 1: Successful).
-
-| Model                           | Accuracy | Precision (Class 0) | Recall (Class 0) | Precision (Class 1) | Recall (Class 1) |
-|---------------------------------|----------|---------------------|------------------|---------------------|------------------|
-| Logistic Regression (Combined Features) | 56.90%   | 0.65                | 0.63             | 0.46                | 0.48             |
-| Random Forest (Combined Features)       | 60.34%   | 0.66                | 0.71             | 0.50                | 0.43             |
-| Tuned Random Forest                     | **66.00%**   | 0.67                | 0.86             | 0.62                | 0.35             |
-| SVM (Combined Features)                 | 50.00%   | 0.58                | 0.60             | 0.36                | 0.35             |
-| Tuned SVM                               | 55.17%   | 0.62                | 0.69             | 0.42                | 0.35             |
+| Model                           | Features              | Accuracy | Precision (Class 0) | Recall (Class 0) | Precision (Class 1) | Recall (Class 1) | F1-Score |
+|---------------------------------|-----------------------|----------|---------------------|------------------|---------------------|------------------|----------|
+| Logistic Regression             | Years Since Release   | 53.40%   | 62%                 | 57%              | 42%                 | 48%              | 52%      |
+| Logistic Regression             | Combined Features     | 56.90%   | 65%                 | 63%              | 46%                 | 48%              | 55%      |
+| Random Forest (Untuned)         | Years Since Release   | 60.30%   | 62%                 | 86%              | 50%                 | 22%              | 51%      |
+| Random Forest (Untuned)         | Combined Features     | 60.30%   | 66%                 | 71%              | 50%                 | 43%              | 58%      |
+| Random Forest (Tuned)           | Combined Features     | **65.52%** | 67%                 | 86%              | 62%                 | 35%              | 60%      |
+| SVM (Untuned)                   | Years Since Release   | 60.30%   | 63%                 | 83%              | 50%                 | 26%              | 53%      |
+| SVM (Untuned)                   | Combined Features     | 50.00%   | 58%                 | 60%              | 36%                 | 35%              | 47%      |
+| SVM (Tuned)                     | Combined Features     | 55.17%   | 62%                 | 69%              | 42%                 | 35%              | 51%      |
 
 **Key Observations**:
-- The **Tuned Random Forest** model achieved the highest accuracy of **66%**, demonstrating its ability to capture complex, non-linear relationships better than Logistic Regression and SVM.
-- The **Recall (Class 0)** for the Tuned Random Forest model was notably high at **0.86**, indicating the model's strength in correctly identifying non-successful games.
-- On the other hand, the **Recall (Class 1)** values were relatively low across all models, which suggests that predicting "Successful" games remains challenging, likely due to class imbalance in the dataset.
-
-The insights gained from these results will help refine feature selection and further improve model performance, particularly focusing on boosting **Recall for Class 1** (Successful games) in future iterations.
+- **Random Forest** performed the best after tuning, achieving an accuracy of **65.52%**.
+- **SVM** struggled with accuracy, even after hyperparameter tuning, indicating it may not be the best model for this dataset.
+- **Logistic Regression** also showed moderate performance but was outperformed by Random Forest.
 
 ## Limitations and Future Work
 
@@ -166,10 +202,19 @@ Future improvements and extensions for this project could include:
 
 ## References
 
-- Bellavista, P., Corradi, A., & Stefanelli, C. (2001). [Mobile agent middleware for mobile computing](https://doi.org/10.1109/2.910896). *Computer, 34*(3), 73-81.
-- Kirasich, K., Smith, T., & Sadler, B. (2018). [Random Forest vs Logistic Regression: Binary Classification for Heterogeneous Datasets](https://scholar.smu.edu/datasciencereview/vol1/iss3/9). *SMU Data Science Review, 1*(3), Article 9. Creative Commons License.
-- Lounela, K. (2024). [On Identifying Relevant Features for a Successful Indie Video Game Release on Steam](https://aaltodoc.aalto.fi/items/d578980e-71fa-4618-b500-dff30bbac490). *Master’s Programme in Department of Information and Service Management*.
+- Breiman, L. (2001). [Random forests](https://doi.org/10.1023/A:1010933404324). *Machine Learning, 45*(1), 5–32.  
+- Chawla, N. V., Bowyer, K. W., Hall, L. O., & Kegelmeyer, W. P. (2002). [SMOTE: Synthetic Minority Over-sampling Technique](https://doi.org/10.1613/jair.953). *Journal of Artificial Intelligence Research, 16*, 321–357.  
+- Kirasich, K., Smith, T., & Sadler, B. (2018). [Random Forest vs Logistic Regression: Binary Classification for Heterogeneous Datasets](https://scholar.smu.edu/datasciencereview/vol1/iss3/9). *SMU Data Science Review, 1*(3), Article 9. Creative Commons License.  
+- Lounela, K. (2024). [On Identifying Relevant Features for a Successful Indie Video Game Release on Steam](https://aaltodoc.aalto.fi/items/d578980e-71fa-4618-b500-dff30bbac490). *Master’s Programme in Department of Information and Service Management*.  
+
 
 ## Links
-- [Overleaf Project Report](https://www.overleaf.com/read/nkwywqzxpcwr#cf3410)
-- [GitHub Repository](https://github.com/dgraves4/steam-indie-success)
+
+- [Overleaf Project Report](https://www.overleaf.com/read/nkwywqzxpcwr#cf3410): The detailed project report, including findings, analysis, and visualizations.
+- [GitHub Repository](https://github.com/dgraves4/steam-indie-success): The project repository containing all scripts, data, notebooks, and supporting files.
+- [Steam Data Collection Script](https://github.com/dgraves4/steam-indie-success/blob/main/src/steam_data_collection.py): Python script used to collect game data from the Steam Web API.
+- [Data Cleaning and EDA Notebook](https://github.com/dgraves4/steam-indie-success/blob/main/notebooks/data_cleaning_EDA.ipynb): Notebook detailing the data cleaning and exploratory data analysis process.
+- [Predictive Analysis Notebook](https://github.com/dgraves4/steam-indie-success/blob/main/notebooks/predictive_analysis.ipynb): Notebook containing the machine learning models, hyperparameter tuning, and evaluation.
+- [Raw Dataset](https://github.com/dgraves4/steam-indie-success/tree/main/data): Directory containing raw and processed datasets used in the project.
+- [Steam Web API Documentation](https://developer.valvesoftware.com/wiki/Steam_Web_API): Official documentation for the Steam Web API used to collect game metadata.
+
