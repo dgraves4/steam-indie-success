@@ -272,11 +272,14 @@ Ultimately, this project offers valuable guidance for developers looking to navi
 
 ## References
 
+## References
+
 - Breiman, L. (2001). [Random forests](https://doi.org/10.1023/A:1010933404324). *Machine Learning, 45*(1), 5–32.  
 - Chawla, N. V., Bowyer, K. W., Hall, L. O., & Kegelmeyer, W. P. (2002). [SMOTE: Synthetic Minority Over-sampling Technique](https://doi.org/10.1613/jair.953). *Journal of Artificial Intelligence Research, 16*, 321–357.  
 - Kirasich, K., Smith, T., & Sadler, B. (2018). [Random Forest vs Logistic Regression: Binary Classification for Heterogeneous Datasets](https://scholar.smu.edu/datasciencereview/vol1/iss3/9). *SMU Data Science Review, 1*(3), Article 9. Creative Commons License.  
 - Lounela, K. (2024). [On Identifying Relevant Features for a Successful Indie Video Game Release on Steam](https://aaltodoc.aalto.fi/items/d578980e-71fa-4618-b500-dff30bbac490). *Master’s Programme in Department of Information and Service Management*.  
-
+- Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., ... & Duchesnay, E. (2011). [Scikit-learn: Machine learning in Python](https://doi.org/10.5555/1953048.2078195). *Journal of Machine Learning Research, 12*, 2825–2830.  
+- Steam Web API. (n.d.). [Steam Web API Documentation](https://developer.valvesoftware.com/wiki/Steam_Web_API).  
 
 ## Links
 
